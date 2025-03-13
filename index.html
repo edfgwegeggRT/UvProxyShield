@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -437,8 +438,8 @@
         url = 'https://' + url;
       }
       
-      // Use Ultraviolet-style proxy (static implementation)
-      return 'https://uv.thelm.es/service/go/' + url;
+      // Use proxy services from an array
+      return proxyServices[currentProxyIndex] + url;
     }
 
     // Show/hide display elements
@@ -488,7 +489,7 @@
           proxyIframe.src = getProxyUrl(url);
           updateDisplayState('frame');
           
-          // Enter fullscreen automatically
+          // Enter fullscreen automatically when clicking proxy
           if (!isFullscreen) {
             toggleFullscreen();
           }
@@ -530,7 +531,8 @@
     // Retry button
     retryButton.addEventListener('click', function() {
       if (currentUrl) {
-        loadUrl(currentUrl);
+        tryAlternativeProxy();
+        updateDisplayState('frame');
       }
     });
 
@@ -554,7 +556,9 @@
     const proxyServices = [
       'https://uv.thelm.es/service/go/',
       'https://ultraviolet.vercel.app/service/go/',
-      'https://hypertabs-proxy.vercel.app/service/go/'
+      'https://hypertabs-proxy.vercel.app/service/go/',
+      'https://ultraviolet-node.bafybeidhqnzq2eqpywlot5u7zzfbkcvfhp6q6r5ek73hsfis6oj2vyvwe.repl.co/service/hvtrs8%2F-',
+      'https://unblock.acrobat.com/?url='
     ];
     
     let currentProxyIndex = 0;
@@ -568,14 +572,6 @@
       
       proxyIframe.src = alternativeProxyUrl;
     }
-    
-    // Add event listener to retry with alternative proxy
-    document.getElementById('retryButton').addEventListener('click', function() {
-      if (currentUrl) {
-        tryAlternativeProxy();
-        updateDisplayState('frame');
-      }
-    });
   </script>
 </body>
 </html>
