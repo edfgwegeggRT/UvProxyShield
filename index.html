@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberProxy - Web Proxy Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Base styles */
+    :root {
+      --primary: #ff0043;
+      --background: #000000;
+      --foreground: #ffffff;
+      --accent: #1a1a1a;
+      --border: #333333;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header and text styles */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 40px;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+      animation: flicker 5s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.8;
+      }
+    }
+
+    p {
+      font-size: 16px;
+      opacity: 0.8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Form styles */
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto 30px;
+    }
+
+    .proxy-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .proxy-form {
+        flex-direction: row;
+      }
+    }
+
+    .input-container {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .url-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      width: 20px;
+      height: 20px;
+    }
+
+    .proxy-input {
+      width: 100%;
+      padding: 15px 15px 15px 40px;
+      border-radius: 5px;
+      border: 1px solid var(--primary);
+      background-color: rgba(20, 20, 20, 0.6);
+      color: var(--foreground);
+      font-family: 'JetBrains Mono', monospace;
+      box-shadow: 0 0 10px rgba(255, 0, 67, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .proxy-input:focus {
+      outline: none;
+      box-shadow: 0 0 15px rgba(255, 0, 67, 0.5);
+    }
+
+    .proxy-button {
+      padding: 15px 30px;
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 0, 67, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .proxy-button:hover {
+      background-color: #cc0036;
+      box-shadow: 0 0 20px rgba(255, 0, 67, 0.6);
+    }
+
+    .error-message {
+      color: var(--primary);
+      margin-top: 5px;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* Proxy display styles */
+    .proxy-display {
+      margin-top: 30px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .empty-state, .loading-state, .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background-color: var(--accent);
+    }
+
+    .state-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      color: var(--primary);
+      opacity: 0.6;
+    }
+
+    .state-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .proxy-frame-container {
+      display: none;
+    }
+
+    .frame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background-color: var(--accent);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    .url-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 80%;
+      overflow: hidden;
+    }
+
+    .url-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 5px var(--primary);
+    }
+
+    .url-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
+
+    .refresh-button, .fullscreen-button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease;
+    }
+
+    .refresh-button:hover, .fullscreen-button:hover {
+      color: var(--foreground);
+    }
+
+    .frame-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .proxy-iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      background-color: #fff;
+    }
+
+    .fullscreen .proxy-iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .fullscreen .frame-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 101;
+      border-radius: 0;
+    }
+
+    /* Loader animation */
+    .loader {
+      border: 4px solid rgba(255, 0, 67, 0.2);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Footer styles */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 20px 0;
+      opacity: 0.7;
+      font-size: 14px;
+    }
+
+    .button-secondary {
+      background-color: var(--accent);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .button-secondary:hover {
+      background-color: rgba(255, 0, 67, 0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CYBER<span>PROXY</span></h1>
+      <p>Access websites through a static proxy with enhanced privacy and no restrictions.</p>
+    </header>
+
+    <main>
+      <div class="form-container">
+        <form id="proxyForm" class="proxy-form">
+          <div class="input-container">
+            <svg class="url-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <input type="text" id="urlInput" class="proxy-input" placeholder="Enter URL (e.g., example.com)" required>
+            <div id="validationError" class="error-message"></div>
+          </div>
+          <button type="submit" class="proxy-button">PROXY</button>
+        </form>
+        <p>Enter any URL to view it through our secure proxy service. Stay anonymous and bypass restrictions.</p>
+      </div>
+
+      <div class="proxy-display">
+        <!-- Empty state (initial state) -->
+        <div id="emptyState" class="empty-state">
+          <svg class="state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <h3 class="state-title">No Website Loaded</h3>
+          <p>Enter a URL above to view it through our secure proxy.</p>
+        </div>
+
+        <!-- Loading state (hidden by default) -->
+        <div id="loadingState" class="loading-state hidden">
+          <div class="loader"></div>
+          <h3 class="state-title">Loading Website</h3>
+          <p>Please wait while we connect to the requested website...</p>
+        </div>
+
+        <!-- Error state (hidden by default) -->
+        <div id="errorState" class="error-state hidden">
+          <svg class="state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <h3 class="state-title">Unable to Load Website</h3>
+          <p id="errorMessage">Failed to load the requested website.</p>
+          <button id="retryButton" class="button-secondary">Try Again</button>
+        </div>
+
+        <!-- Proxy frame (hidden by default) -->
+        <div id="proxyFrameContainer" class="proxy-frame-container">
+          <div class="frame-header">
+            <div class="url-display">
+              <div class="url-dot"></div>
+              <div id="frameUrl" class="url-text"></div>
+            </div>
+            <div class="frame-controls">
+              <button id="refreshButton" class="refresh-button" title="Refresh">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M1 20v-6h6"></path>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>
+                  <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"></path>
+                </svg>
+              </button>
+              <button id="fullscreenButton" class="fullscreen-button" title="Toggle Fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                  <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                  <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                  <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <iframe id="proxyIframe" class="proxy-iframe" sandbox="allow-forms allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>CyberProxy &copy; <span id="currentYear"></span> | Secured with static proxy technology</p>
+      <p>Use responsibly. We are not responsible for content accessed through this service.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Set current year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Elements
+    const proxyForm = document.getElementById('proxyForm');
+    const urlInput = document.getElementById('urlInput');
+    const validationError = document.getElementById('validationError');
+    const emptyState = document.getElementById('emptyState');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+    const proxyFrameContainer = document.getElementById('proxyFrameContainer');
+    const frameUrl = document.getElementById('frameUrl');
+    const proxyIframe = document.getElementById('proxyIframe');
+    const retryButton = document.getElementById('retryButton');
+    const refreshButton = document.getElementById('refreshButton');
+    const fullscreenButton = document.getElementById('fullscreenButton');
+
+    // State management
+    let currentUrl = null;
+    let isFullscreen = false;
+
+    // URL validation
+    function isValidUrl(url) {
+      try {
+        // Add protocol if missing
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        new URL(url);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Function to get proxy URL
+    function getProxyUrl(url) {
+      // Add protocol if missing
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      
+      // Use Ultraviolet-style proxy (static implementation)
+      return 'https://uv.thelm.es/service/go/' + url;
+    }
+
+    // Show/hide display elements
+    function updateDisplayState(state) {
+      emptyState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+      errorState.classList.add('hidden');
+      proxyFrameContainer.classList.add('hidden');
+      
+      switch(state) {
+        case 'empty':
+          emptyState.classList.remove('hidden');
+          break;
+        case 'loading':
+          loadingState.classList.remove('hidden');
+          break;
+        case 'error':
+          errorState.classList.remove('hidden');
+          break;
+        case 'frame':
+          proxyFrameContainer.classList.remove('hidden');
+          break;
+      }
+    }
+
+    // Toggle fullscreen
+    function toggleFullscreen() {
+      isFullscreen = !isFullscreen;
+      if (isFullscreen) {
+        proxyFrameContainer.classList.add('fullscreen');
+      } else {
+        proxyFrameContainer.classList.remove('fullscreen');
+      }
+    }
+
+    // Load URL in iframe
+    function loadUrl(url) {
+      currentUrl = url;
+      updateDisplayState('loading');
+      
+      try {
+        // Update URL display
+        frameUrl.textContent = url;
+        
+        // Set iframe source after brief delay to show loading state
+        setTimeout(() => {
+          proxyIframe.src = getProxyUrl(url);
+          updateDisplayState('frame');
+          
+          // Enter fullscreen automatically
+          if (!isFullscreen) {
+            toggleFullscreen();
+          }
+        }, 1000);
+      } catch (error) {
+        errorMessage.textContent = 'Failed to load the requested website. Please try again.';
+        updateDisplayState('error');
+      }
+    }
+
+    // Form submission
+    proxyForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get and validate URL
+      let url = urlInput.value.trim();
+      validationError.style.display = 'none';
+      
+      if (!url) {
+        validationError.textContent = 'Please enter a URL';
+        validationError.style.display = 'block';
+        return;
+      }
+      
+      if (!isValidUrl(url)) {
+        validationError.textContent = 'Please enter a valid URL (e.g., example.com)';
+        validationError.style.display = 'block';
+        return;
+      }
+      
+      // Add protocol if missing
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      
+      loadUrl(url);
+    });
+
+    // Retry button
+    retryButton.addEventListener('click', function() {
+      if (currentUrl) {
+        loadUrl(currentUrl);
+      }
+    });
+
+    // Refresh button
+    refreshButton.addEventListener('click', function() {
+      if (currentUrl) {
+        loadUrl(currentUrl);
+      }
+    });
+
+    // Fullscreen toggle
+    fullscreenButton.addEventListener('click', toggleFullscreen);
+    
+    // Handle iframe load errors
+    proxyIframe.addEventListener('error', function() {
+      errorMessage.textContent = 'Failed to load the requested website. The proxy service may be unavailable.';
+      updateDisplayState('error');
+    });
+
+    // Alternative proxy services (these can be cycled through if one doesn't work)
+    const proxyServices = [
+      'https://uv.thelm.es/service/go/',
+      'https://ultraviolet.vercel.app/service/go/',
+      'https://hypertabs-proxy.vercel.app/service/go/'
+    ];
+    
+    let currentProxyIndex = 0;
+    
+    // Function to try alternative proxy if the current one fails
+    function tryAlternativeProxy() {
+      if (!currentUrl) return;
+      
+      currentProxyIndex = (currentProxyIndex + 1) % proxyServices.length;
+      const alternativeProxyUrl = proxyServices[currentProxyIndex] + currentUrl;
+      
+      proxyIframe.src = alternativeProxyUrl;
+    }
+    
+    // Add event listener to retry with alternative proxy
+    document.getElementById('retryButton').addEventListener('click', function() {
+      if (currentUrl) {
+        tryAlternativeProxy();
+        updateDisplayState('frame');
+      }
+    });
+  </script>
+</body>
+</html>

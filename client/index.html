@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberProxy - Web Proxy Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: 350 100% 47%;
+        --background: 0 0% 0%;
+        --foreground: 0 0% 100%;
+        --card: 0 0% 10%;
+        --card-foreground: 0 0% 100%;
+        --popover: 0 0% 10%;
+        --popover-foreground: 0 0% 100%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 0 0% 10%;
+        --secondary-foreground: 0 0% 100%;
+        --muted: 0 0% 20%;
+        --muted-foreground: 0 0% 60%;
+        --accent: 0 0% 15%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 100% 50%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 0 0% 20%;
+        --input: 0 0% 20%;
+        --ring: 350 100% 47%;
+        --radius: 0.5rem;
+        --sidebar-background: 0 0% 5%;
+        --sidebar-foreground: 0 0% 100%;
+        --sidebar-primary: 350 100% 47%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 0 0% 15%;
+        --sidebar-accent-foreground: 0 0% 100%;
+        --sidebar-border: 0 0% 20%;
+        --sidebar-ring: 350 100% 47%;
+      }
+
+      body {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      @keyframes flicker {
+        0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+          opacity: 1;
+        }
+        20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+          opacity: 0.8;
+        }
+      }
+
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
