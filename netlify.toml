@@ -11,6 +11,6 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "ALLOWALL"
-    X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors *;"
+    X-Frame-Options = "ALLOW"
+    Content-Security-Policy = "frame-ancestors *;"
+    Feature-Policy = "fullscreen *;"
