@@ -1,7 +1,7 @@
 
 [build]
-  publish = "dist/public"
-  command = "npm run build"
+  publish = "./"
+  command = ""
 
 [[redirects]]
   from = "/*"
@@ -12,5 +12,6 @@
   for = "/*"
   [headers.values]
     X-Frame-Options = "ALLOW"
-    Content-Security-Policy = "frame-ancestors *;"
-    Feature-Policy = "fullscreen *;"
+    X-Content-Type-Options = "nosniff"
+    Content-Security-Policy = "frame-ancestors *; default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;"
+    Permissions-Policy = "fullscreen=*, geolocation=*, camera=*, microphone=*"

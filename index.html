@@ -1,16 +1,79 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UV Proxy</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+    }
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .form-wrapper {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #2563eb;
     }
     #proxyFrame {
       width: 100%;
@@ -23,38 +86,23 @@
       bottom: 0;
       display: none;
     }
-    .fullscreen {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 9999 !important;
-    }
   </style>
 </head>
-<body class="bg-gray-100">
-  <div id="form-container" class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
-      <h1 class="text-2xl font-bold text-center mb-6">Web Proxy</h1>
-
-      <form id="proxyForm" class="space-y-4">
-        <div>
-          <label for="url" class="block text-sm font-medium text-gray-700 mb-1">Enter URL</label>
+<body>
+  <div id="form-container" class="container">
+    <div class="form-wrapper">
+      <h1>Web Proxy</h1>
+      <form id="proxyForm">
+        <div class="input-group">
+          <label for="url">Enter URL</label>
           <input 
             type="text" 
             id="url" 
             placeholder="https://example.com" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
         </div>
-        <button 
-          type="submit" 
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
-        >
-          Browse
-        </button>
+        <button type="submit">Browse</button>
       </form>
     </div>
   </div>
@@ -91,14 +139,14 @@
 
           // Add fullscreen capability
           proxyFrame.addEventListener('click', function() {
-            if (!document.fullscreenElement) {
-              if (proxyFrame.requestFullscreen) {
-                proxyFrame.requestFullscreen();
-              } else if (proxyFrame.webkitRequestFullscreen) {
-                proxyFrame.webkitRequestFullscreen();
-              } else if (proxyFrame.msRequestFullscreen) {
-                proxyFrame.msRequestFullscreen();
-              }
+            if (proxyFrame.requestFullscreen) {
+              proxyFrame.requestFullscreen();
+            } else if (proxyFrame.mozRequestFullScreen) { /* Firefox */
+              proxyFrame.mozRequestFullScreen();
+            } else if (proxyFrame.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+              proxyFrame.webkitRequestFullscreen();
+            } else if (proxyFrame.msRequestFullscreen) { /* IE/Edge */
+              proxyFrame.msRequestFullscreen();
             }
           });
 
