@@ -7,3 +7,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "ALLOWALL"
+    X-XSS-Protection = "1; mode=block"
+    Content-Security-Policy = "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors *;"
