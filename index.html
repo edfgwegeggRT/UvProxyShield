@@ -107,7 +107,7 @@
     </div>
   </div>
 
-  <iframe id="proxyFrame" allowfullscreen="true"></iframe>
+  <iframe id="proxyFrame" allowfullscreen="true" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -133,11 +133,14 @@
           // Hide the form
           formContainer.style.display = 'none';
 
-          // Show and load the iframe
+          // Show and load the iframe with UV proxy
           proxyFrame.style.display = 'block';
-          proxyFrame.src = url;
+          
+          // Encode the URL for UV proxy
+          let encodedUrl = btoa(url);
+          proxyFrame.src = '/uv/service/' + encodedUrl;
 
-          // Add fullscreen capability
+          // Add fullscreen capability when proxy iframe is clicked
           proxyFrame.addEventListener('click', function() {
             if (proxyFrame.requestFullscreen) {
               proxyFrame.requestFullscreen();

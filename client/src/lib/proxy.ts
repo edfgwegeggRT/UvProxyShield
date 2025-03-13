@@ -1,7 +1,10 @@
-// Validate URL format
+
+// UV proxy utilities
+import { encodeUrl } from '@/uv/uv.bundle';
+
 export function isValidUrl(url: string): boolean {
   try {
-    // Add protocol if missing
+    // Add https:// if no protocol is specified
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://' + url;
     }
@@ -12,11 +15,17 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
-// Get the proxy URL for a given target URL
-export function getProxyUrl(url: string): string {
-  // Add protocol if missing
+export function formatUrl(url: string): string {
+  // Add https:// if no protocol is specified
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
+    return 'https://' + url;
   }
-  return `/api/proxy?url=${encodeURIComponent(url)}`;
+  return url;
+}
+
+export function getProxyUrl(url: string): string {
+  const formattedUrl = formatUrl(url);
+  // Using UV's encodeUrl to properly format the URL for the UV proxy
+  const encodedUrl = encodeUrl(formattedUrl);
+  return `/uv/service/${encodedUrl}`;
 }

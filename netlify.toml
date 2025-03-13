@@ -11,7 +11,11 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "ALLOW"
+    X-Frame-Options = "ALLOWALL"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = "frame-ancestors *; default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data:; connect-src *;"
+    Content-Security-Policy = "frame-ancestors *; default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *; worker-src * blob:;"
     Permissions-Policy = "fullscreen=*, geolocation=*, camera=*, microphone=*"
+    Access-Control-Allow-Origin = "*"
+    Cross-Origin-Embedder-Policy = "unsafe-none"
+    Cross-Origin-Opener-Policy = "unsafe-none"
+    Cross-Origin-Resource-Policy = "cross-origin"

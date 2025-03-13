@@ -28,6 +28,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Added UV proxy routes
+  app.all("/uv/service/*", async (req, res) => {
+    try {
+      await setupProxy(req, res);
+    } catch (error) {
+      console.error("UV Proxy error:", error);
+      return res.status(500).json({ message: "Failed to proxy the request" });
+    }
+  });
+
+
   const httpServer = createServer(app);
 
   return httpServer;
